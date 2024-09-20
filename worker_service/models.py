@@ -6,8 +6,7 @@ class WorkerModel(BaseModel):
     unique_id: Optional[str] = None
     host_ip: Optional[str] = None
     status: Optional[str] = None
-    ports: Optional[list["PortModel"]] = []
-    environment_variables: Optional[list["EnvironmentVariableModel"]] = []
+
     class Config:
         from_attributes = True
 
@@ -37,3 +36,13 @@ class CreatePortModel(BaseModel):
 class CreateEnvironmentVariableModel(BaseModel):
     name: str
     value: str
+
+class ResponseWorkerModel(BaseModel):
+    id: Optional[str] = None
+    unique_id: Optional[str] = None
+    host_ip: Optional[str] = None
+    status: Optional[str] = None
+    ports: Optional[list["PortModel"]] = []
+    environment_variables: Optional[list["EnvironmentVariableModel"]] = []
+    class Config:
+        from_attributes = True

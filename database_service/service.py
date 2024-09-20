@@ -20,17 +20,17 @@ class DatabaseService(Generic[T]):
     def create_metadata(self):
         self.db.create_metadata()
     
-    def getOne(self, id: str) -> T:
-        return self.db.getOne(id, self.schema)
+    async def getOne(self, id: str) -> T:
+        return await self.db.getOne(id, self.schema)
 
-    def getAll(self, query: QueryParamsModel) -> list[T]:
-        return self.db.getAll(query, self.schema)
+    async def getAll(self, query: QueryParamsModel) -> list[T]:
+        return await self.db.getAll(query, self.schema)
     
-    def createOne(self, data: BaseModel) -> T:
-        return self.db.createOne(data, self.schema)
+    async def createOne(self, data: BaseModel) -> T:
+        return await self.db.createOne(data, self.schema)
     
-    def updateOne(self, id: str, data: BaseModel) -> T:
-        return self.db.updateOne(id, data, self.schema)
+    async def updateOne(self, id: str, data: BaseModel) -> T:
+        return await self.db.updateOne(id, data, self.schema)
     
-    def deleteOne(self, id: str):
-        return self.db.deleteOne(id, self.schema)
+    async def deleteOne(self, id: str):
+        return await self.db.deleteOne(id, self.schema)

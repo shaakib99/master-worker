@@ -1,13 +1,16 @@
 # from worker_service.service import WorkerService
 from worker_service.models import WorkerModel, PortModel, EnvironmentVariableModel
+from worker_service.service import WorkerService, PortService, EnvironmentVariableService
 from master_service.models import CreateWorkerModel
 from common.utils import get_open_port, create_docker_container
 import uuid
 
 class MasterService:
-    def __init__(self, worker_service = None):
+    def __init__(self, worker_service = WorkerService(), port_service = PortService(), environment_variable_service = EnvironmentVariableService()):
         self.master_model = None
-        self.worker_model = worker_service
+        self.worker_service = worker_service
+        self.port_service = port_service
+        self.environment_variable_service = environment_variable_service
     
     async def create_worker(self, data: CreateWorkerModel):
         unique_id = str(uuid.uuid4())
@@ -32,21 +35,21 @@ class MasterService:
         is_worker_created = await create_docker_container(
             data.docker_image_name, 
             f'worker-{unique_id}', 
-            [ f'{port.port}:{port.mapped_port}' for port in ports ], 
+            [ f'{port.mapped_port}:{port.port}' for port in ports ], 
             [ f'{env_var.name}={env_var.value}' for env_var in environment_variables ]
             )
 
         if is_worker_created is False:
             return {"message": "worker creation failed"}
 
-        worker = self.worker_model.createOne(worker)
+        worker = await self.worker_service.createOne(worker)
 
         for port in ports:
             port.worker_id = worker.id
-            self.worker_model.createOne(port)
+            await self.port_service.createOne(port)
         
         for env_var in environment_variables:
             env_var.worker_id = worker.id
-            self.worker_model.createOne(env_var)
+            await self.environment_variable_service.createOne(env_var)
         
         return worker

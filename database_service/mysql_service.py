@@ -32,11 +32,11 @@ class MySQLService(DatabaseServiceABC):
             MySQLService.instance = MySQLService()
         return MySQLService.instance
         
-    def getOne(self, id: str, schema: DeclarativeBase):
+    async def getOne(self, id: str, schema: DeclarativeBase):
         cursor = self.session.query(schema(id = id))
         return cursor.first()
 
-    def getAll(self, query: QueryParamsModel, schema: DeclarativeBase):
+    async def getAll(self, query: QueryParamsModel, schema: DeclarativeBase):
         cursor = self.session.query(schema)
 
         if query.selected_fields:
@@ -65,13 +65,13 @@ class MySQLService(DatabaseServiceABC):
 
         return cursor.all()
 
-    def createOne(self, data: BaseModel, schema: DeclarativeBase):
+    async def createOne(self, data: BaseModel, schema: DeclarativeBase):
         model = schema(**data.model_dump())
         self.session.add(model)
         self.session.commit()
         return model
 
-    def updateOne(self, id: str, data: BaseModel, schema: DeclarativeBase):
+    async def updateOne(self, id: str, data: BaseModel, schema: DeclarativeBase):
         model = self.getOne(id, schema)
         if not model: 
             raise exc.NoResultFound()
@@ -82,7 +82,7 @@ class MySQLService(DatabaseServiceABC):
         self.session.commit()
         return model
 
-    def deleteOne(self, id: str, schema: DeclarativeBase):
+    async def deleteOne(self, id: str, schema: DeclarativeBase):
         model = self.getOne(id, schema)
         if not model:
             raise exc.NoResultFound()
