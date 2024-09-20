@@ -12,8 +12,10 @@ class MySQLService(DatabaseServiceABC):
         self.connect()
 
     def connect(self):
+        print(os.getenv("DB_URL"))
         self.engine = create_engine(os.getenv("DB_URL", "localhost"))
         self.session: Session = sessionmaker(bind=self.engine, autoflush=True)()
+        self.create_metadata()
 
     def disconnect(self):
         self.session.close()

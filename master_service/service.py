@@ -31,15 +31,15 @@ class MasterService:
         worker = WorkerModel(unique_id = unique_id, status='INIT', host_ip='127.0.0.1')
 
         # create docker container
-        is_worker_created = await create_docker_container(
-            data.docker_image_name, 
-            f'worker-{unique_id}', 
-            [ f'{port.mapped_port}:{port.port}' for port in ports ], 
-            [ f'{env_var.name}={env_var.value}' for env_var in environment_variables ]
-            )
+        # is_worker_created = await create_docker_container(
+        #     data.docker_image_name, 
+        #     f'worker-{unique_id}', 
+        #     [ f'{port.mapped_port}:{port.port}' for port in ports ], 
+        #     [ f'{env_var.name}={env_var.value}' for env_var in environment_variables ]
+        #     )
 
-        if is_worker_created is False:
-            return {"message": "worker creation failed"}
+        # if is_worker_created is False:
+        #     return {"message": "worker creation failed"}
 
         worker = await self.worker_service.createOne(worker)
 
