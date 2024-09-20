@@ -1,4 +1,3 @@
-# from worker_service.service import WorkerService
 from worker_service.models import WorkerModel, PortModel, EnvironmentVariableModel
 from worker_service.service import WorkerService, PortService, EnvironmentVariableService
 from master_service.models import CreateWorkerModel
