@@ -1,9 +1,11 @@
 from database_service.service import DatabaseService
-from worker_service.schemas import WorkerSchema
+from worker_service.schemas import WorkerSchema, PortsSchema, EnvironmentVariablesSchema
 from worker_service.port_service import PortService
 from worker_service.environment_variable_service import EnvironmentVariableService
-from worker_service.models import WorkerModel, PortModel, EnvironmentVariableModel, CreateWorkerModel
-from common.utils import get_open_port, create_docker_container, update_nginx_upstream_config
+from worker_service.models import WorkerModel, CreateWorkerModel
+from worker_service.port_models import CreatePortModel
+from worker_service.environment_variable_models import CreateEnvironmentVariableModel
+from common.utils import create_docker_container, update_nginx_upstream_config
 import uuid
 import os
 
@@ -15,23 +17,23 @@ class WorkerService:
     
     async def createOne(self, data: CreateWorkerModel):
         unique_id = str(uuid.uuid4())
-        ports: list[PortModel] = []
-        environment_variables: list[EnvironmentVariableModel] = []
+        ports: list[PortsSchema] = []
+        environment_variables: list[EnvironmentVariablesSchema] = []
 
-        for port in data.ports:
-            ports.append(PortModel(port = port.port, mapped_port = await get_open_port(), should_add_to_load_balancer = port.should_add_to_load_balancer, is_active = True))
-        
-        # default ssh port
-        ports.append(PortModel(port = 22, mapped_port = await get_open_port(), is_active = True))
-
-        for environment_variable in data.environment_variables:
-            environment_variables.append(EnvironmentVariableModel(name = environment_variable.name, value = environment_variable.value))
-
-        # default environment variable is worker_id
-        environment_variables.append(EnvironmentVariableModel(name = "WORKER_ID", value = unique_id))
-        
         worker = WorkerModel(image_name=data.docker_image_name, unique_id = unique_id, status='INIT', host_ip='127.0.0.1')
 
+        worker_data =  await self.worker_model.createOne(worker)
+
+        for port in [*data.ports, CreatePortModel(port=22, should_add_to_load_balancer=False)]:
+            port.worker_id = worker_data.id
+            port_data = await self.port_service.createOne(port)
+            ports.append(port_data)
+        
+        for env_var in [*data.environment_variables, CreateEnvironmentVariableModel(name='WORKER_ID', value=unique_id)]:
+            env_var.worker_id = worker_data.id
+            env_var_data = await self.environment_variable_service.createOne(env_var)
+            environment_variables.append(env_var_data)
+        
         # create docker container
         is_worker_created = await create_docker_container(
             data.docker_image_name, 
@@ -39,19 +41,9 @@ class WorkerService:
             [ f'{port.mapped_port}:{port.port}' for port in ports ], 
             [ f'{env_var.name}={env_var.value}' for env_var in environment_variables ]
             )
-
+        
         if is_worker_created is False:
             return {"message": "worker creation failed"}
-
-        worker_data =  await self.worker_model.createOne(worker)
-
-        for port in ports:
-            port.worker_id = worker.id
-            await self.port_service.createOne(port)
-        
-        for env_var in environment_variables:
-            env_var.worker_id = worker.id
-            await self.environment_variable_service.createOne(env_var)
         
         for port in ports:
             if port.should_add_to_load_balancer:
