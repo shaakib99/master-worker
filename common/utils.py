@@ -26,6 +26,7 @@ async def update_nginx_upstream_config(command: str):
     except Exception as e:
         print(e)
         return False
+
 async def get_open_port():
     sock = socket.socket()
     sock.bind(('', 0))
