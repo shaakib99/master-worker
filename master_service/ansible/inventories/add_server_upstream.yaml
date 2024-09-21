@@ -1,0 +1,17 @@
+- name: Update Nginx upstream
+  hosts: localhost
+  become: yes
+  become_method: sudo
+  become_user: root
+  vars:
+    ansible_become_pass: '{{host_root_password}}'
+  tasks:
+    - name: Add a new child server to Nginx upstream
+      lineinfile:
+        path: /etc/nginx/conf.d/upstream.conf
+        line: '    server {{ child_server }};'
+        insertafter: '^upstream.*$'
+        state: present
+
+    - name: Reload Nginx
+      command: nginx -s reload

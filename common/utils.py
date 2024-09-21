@@ -18,7 +18,14 @@ async def create_docker_container(image_name: str, container_name: str,  ports_m
     except Exception as e:
         print(e)
         return False
-    
+
+async def update_nginx_upstream_config(command: str):
+    try:
+        subprocess.run(command, shell=True)
+        return True
+    except Exception as e:
+        print(e)
+        return False
 async def get_open_port():
     sock = socket.socket()
     sock.bind(('', 0))

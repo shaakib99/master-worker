@@ -6,3 +6,4 @@ class CreateWorkerModel(BaseModel):
     docker_image_name: Optional[str] = None
     ports: Optional[list[CreatePortModel]] = []
     environment_variables: Optional[list[CreateEnvironmentVariableModel]] = []
+    application_port: Optional[int] = None  

@@ -1,0 +1,17 @@
+- name: Update Nginx upstream
+  hosts: localhost
+  become: yes
+  become_method: sudo
+  become_user: root
+  vars:
+    ansible_become_pass: '{{host_root_password}}'
+  tasks:
+    - name: Remove server from Nginx upstream
+      lineinfile:
+        path: /etc/nginx/conf.d/upstream.conf
+        regexp: '\s*server\s+{{ child_server }};\s*$'
+        insertafter: '^upstream.*$'
+        state: absent
+
+    - name: Reload Nginx
+      command: nginx -s reload

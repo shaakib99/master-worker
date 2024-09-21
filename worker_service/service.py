@@ -3,7 +3,7 @@ from worker_service.schemas import WorkerSchema, PortsSchema, EnvironmentVariabl
 from worker_service.models import WorkerModel, PortModel, EnvironmentVariableModel
 
 class WorkerService:
-    def __init__(self, worker_model = DatabaseService(WorkerSchema)):
+    def __init__(self, worker_model = DatabaseService[WorkerSchema](WorkerSchema)):
         self.worker_model = worker_model
     
     async def createOne(self, data: WorkerModel):
