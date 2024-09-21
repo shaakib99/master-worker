@@ -4,7 +4,7 @@ from typing import Annotated
 from worker_service.models import CreateWorkerModel
 
 router = APIRouter(
-    prefix="/worker",
+    prefix="/workers",
     tags=["worker"],
     responses={
         404: {"description": "Not found"}, 
@@ -22,6 +22,10 @@ router = APIRouter(
 async def create_worker(data: CreateWorkerModel, worker_service: Annotated[WorkerService, Depends(lambda: WorkerService())]):
     return await worker_service.createOne(data)
 
-@router.get("/{id}", status_code=201)
+@router.get("/{id}", status_code=200)
 async def getOne(id: int, worker_service: Annotated[WorkerService, Depends(lambda: WorkerService())]):
     return await worker_service.getOne(id)
+
+@router.delete("/{id}", status_code=200)
+async def deleteOne(id: int, worker_service: Annotated[WorkerService, Depends(lambda: WorkerService())]):
+    return await worker_service.deleteOne(id)

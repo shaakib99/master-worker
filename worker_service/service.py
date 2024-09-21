@@ -5,7 +5,8 @@ from worker_service.environment_variable_service import EnvironmentVariableServi
 from worker_service.models import WorkerModel, CreateWorkerModel
 from worker_service.port_models import CreatePortModel
 from worker_service.environment_variable_models import CreateEnvironmentVariableModel
-from common.utils import create_docker_container, update_nginx_upstream_config
+from database_service.models.query_param import QueryParamsModel
+from common.utils import create_docker_container, update_nginx_upstream_config, remove_docker_container
 import uuid
 import os
 
@@ -54,3 +55,16 @@ class WorkerService:
 
     async def getOne(self, id: int):
         return await self.worker_model.getOne(id)
+    
+    async def deleteOne(self, id: int):
+        worker_data = await self.getOne(id)
+        port_query = QueryParamsModel()
+        port_query.filter_by = f'worker_id = {worker_data.id}'
+        ports = await self.port_service.getAll(port_query)
+        for port in ports:
+            if port.should_add_to_load_balancer:
+                commnad = f'ansible-playbook -i inventory master_service/ansible/inventories/remove_server_upstream.yaml -e child_server="localhost:{port.mapped_port}" -e host_root_password={os.getenv("HOST_ROOT_PASSWORD")}'
+                await update_nginx_upstream_config(commnad)
+
+        await remove_docker_container(f'worker-{worker_data.unique_id}')
+        return await self.worker_model.deleteOne(id)

@@ -19,7 +19,7 @@ class PortsSchema(Base):
     __tablename__ = 'ports'
 
     id = Column(Integer, autoincrement=True, primary_key=True, nullable=False)
-    worker_id = Column(Integer, ForeignKey('workers.id'))
+    worker_id = Column(Integer, ForeignKey('workers.id', ondelete='CASCADE'))
     port = Column(Integer)
     mapped_port = Column(Integer)
     should_add_to_load_balancer = Column(Boolean, default=False)
@@ -30,7 +30,7 @@ class EnvironmentVariablesSchema(Base):
     __tablename__ = 'environment_variables'
 
     id = Column(Integer, autoincrement=True, primary_key=True, nullable=False)
-    worker_id = Column(Integer, ForeignKey('workers.id'))
+    worker_id = Column(Integer, ForeignKey('workers.id', ondelete='CASCADE'))
     name = Column(String(255))
     value = Column(String(255))
     is_active = Column(Boolean, default=True)

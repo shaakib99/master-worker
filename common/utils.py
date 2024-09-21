@@ -19,6 +19,15 @@ async def create_docker_container(image_name: str, container_name: str,  ports_m
         print(e)
         return False
 
+async def remove_docker_container(container_name: str):
+    try:
+        command = f'docker rm -f {container_name}'
+        subprocess.run(command, shell=True)
+        return True
+    except Exception as e:
+        print(e)
+        return False
+    
 async def update_nginx_upstream_config(command: str):
     try:
         subprocess.run(command, shell=True)

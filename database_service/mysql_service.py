@@ -34,7 +34,7 @@ class MySQLService(DatabaseServiceABC):
         return MySQLService.instance
         
     async def getOne(self, id: str, schema: DeclarativeBase):
-        cursor = self.session.query(schema(id = id))
+        cursor = self.session.query(schema).filter_by(id=id)
         return cursor.first()
 
     async def getAll(self, query: QueryParamsModel, schema: DeclarativeBase):
@@ -73,7 +73,7 @@ class MySQLService(DatabaseServiceABC):
         return model
 
     async def updateOne(self, id: str, data: BaseModel, schema: DeclarativeBase):
-        model = self.getOne(id, schema)
+        model = await self.getOne(id, schema)
         if not model: 
             raise exc.NoResultFound()
 
@@ -84,8 +84,9 @@ class MySQLService(DatabaseServiceABC):
         return model
 
     async def deleteOne(self, id: str, schema: DeclarativeBase):
-        model = self.getOne(id, schema)
+        model = await self.getOne(id, schema)
         if not model:
             raise exc.NoResultFound()
         
         self.session.delete(model)
+        self.session.commit()
