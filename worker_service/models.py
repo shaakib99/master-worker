@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
+from worker_service.port_models import PortModel, CreatePortModel
+from worker_service.environment_variable_models import EnvironmentVariableModel, CreateEnvironmentVariableModel
 
 class WorkerModel(BaseModel):
     id: Optional[int] = None
@@ -11,34 +13,10 @@ class WorkerModel(BaseModel):
     class Config:
         from_attributes = True
 
-class PortModel(BaseModel):
-    id: Optional[int] = None
-    worker_id: Optional[str] = None
-    port: Optional[int] = None
-    mapped_port: Optional[int] = None
-    should_add_to_load_balancer: Optional[bool] = False
-    is_active: Optional[bool] = None
-    class Config:
-        from_attributes = True
-
-class EnvironmentVariableModel(BaseModel):
-    id: Optional[str] = None
-    worker_id: Optional[str] = None
-    name: Optional[str] = None
-    value: Optional[str] = None
-    is_active: Optional[bool] = None
-    class Config:
-        from_attributes = True
-
-
-# CRUD
-class CreatePortModel(BaseModel):
-    port: int
-    should_add_to_load_balancer: bool = False
-
-class CreateEnvironmentVariableModel(BaseModel):
-    name: str
-    value: str
+class CreateWorkerModel(BaseModel):
+    docker_image_name: Optional[str] = None
+    ports: Optional[list[CreatePortModel]] = []
+    environment_variables: Optional[list[CreateEnvironmentVariableModel]] = []
 
 class ResponseWorkerModel(BaseModel):
     id: Optional[str] = None
