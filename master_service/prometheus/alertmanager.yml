@@ -1,0 +1,28 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  group_by: ['alertname', 'instance']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'default'
+
+  routes:
+    - matchers:
+        - severity = 'critical'
+      receiver: 'critical'
+    - matchers:
+        - severity = 'warning'
+      receiver: 'warning'
+
+receivers:
+  - name: 'default'
+    webhook_configs:
+      - url: 'http://localhost:8000/alerts'
+  - name: 'critical'
+    webhook_configs:
+      - url: 'http://localhost:8000/alerts/critical'
+  - name: 'warning'
+    webhook_configs:
+      - url: 'http://localhost:8000/alerts/warning'

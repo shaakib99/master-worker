@@ -1,0 +1,40 @@
+groups:
+  - name: cpu_usage
+    rules:
+      - alert: total_cpu_usage
+        expr: cpu_usage > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          description: 'CPU usage is high on {{ $labels.instance }}'
+
+  - name: ram_usage
+    rules:
+      - alert: total_ram_usage
+        expr: ram_usage > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          description: 'RAM usage is high on {{ $labels.instance }}'
+
+  - name: disk_usage
+    rules:
+      - alert: total_disk_usage
+        expr: disk_usage > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          description: 'Disk usage is high on {{ $labels.instance }}'
+  
+  - name: server_down
+    rules:
+      - alert: server_down
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          description: 'Server is down on {{ $labels.instance }}'
