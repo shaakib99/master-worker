@@ -12,6 +12,8 @@ alerting:
 scrape_configs:
   - job_name: 'master'
     metrics_path: '/metrics'
-    static_configs:
-      - targets: ['localhost:8000']
+    file_sd_configs:
+      - refresh_interval: "5m"
+        files:
+          - 'targets.json'
 

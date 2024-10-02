@@ -16,10 +16,15 @@ RUN apt-get update && apt-get install -y \
 
 # Setup prometheus
 COPY ./master_service/prometheus/*.yml /etc/prometheus/
+COPY ./master_service/prometheus/*.json /etc/prometheus/
+
 RUN systemctl restart prometheus
 
 # Setup alertmanager
 RUN systemctl restart prometheus-alertmanager
+
+# Setup targets.json
+RUN chown prometheus:prometheus /etc/prometheus/targets.json
 
 # Setup SSH
 RUN mkdir /var/run/sshd

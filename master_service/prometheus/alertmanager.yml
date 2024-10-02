@@ -3,26 +3,26 @@ global:
 
 route:
   group_by: ['alertname', 'instance']
-  group_wait: 10s
-  group_interval: 10s
+  group_wait: 2m
+  group_interval: 2m
   repeat_interval: 1h
   receiver: 'default'
 
   routes:
     - matchers:
-        - severity = 'critical'
-      receiver: 'critical'
+        - type="create_worker"
+      receiver: 'create_worker'
     - matchers:
-        - severity = 'warning'
+        - severity="warning"
       receiver: 'warning'
 
 receivers:
   - name: 'default'
     webhook_configs:
       - url: 'http://localhost:8000/alerts'
-  - name: 'critical'
+  - name: 'create_worker'
     webhook_configs:
-      - url: 'http://localhost:8000/alerts/critical'
+      - url: 'http://localhost:8000/prometheus/create'
   - name: 'warning'
     webhook_configs:
       - url: 'http://localhost:8000/alerts/warning'

@@ -7,17 +7,21 @@ groups:
         labels:
           severity: warning
         annotations:
+          labels: '{{ $labels.instance }}'
           description: 'CPU usage is high on {{ $labels.instance }}'
 
   - name: ram_usage
     rules:
       - alert: total_ram_usage
         expr: ram_usage > 0.8
-        for: 5m
+        for: 1m
         labels:
-          severity: warning
+          type: 'create_worker'
+          worker_info: '{{ $labels.worker_info }}'
         annotations:
+          labels: '{{ $labels.instance }}'
           description: 'RAM usage is high on {{ $labels.instance }}'
+          instance: '{{ $labels.instance }}'
 
   - name: disk_usage
     rules:
@@ -27,6 +31,7 @@ groups:
         labels:
           severity: warning
         annotations:
+          labels: '{{ $labels.instance }}'
           description: 'Disk usage is high on {{ $labels.instance }}'
   
   - name: server_down
@@ -37,4 +42,5 @@ groups:
         labels:
           severity: warning
         annotations:
+          labels: '{{ $labels.instance }}'
           description: 'Server is down on {{ $labels.instance }}'

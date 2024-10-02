@@ -1,5 +1,6 @@
 import subprocess
 import socket
+import json
 
 async def create_docker_container(image_name: str, container_name: str,  ports_map: list[str] = [], environment_variable_map: list[str] = []):
     try:
@@ -36,6 +37,38 @@ async def update_nginx_upstream_config(command: str):
         print(e)
         return False
 
+async def add_observer_prometheus_config(target: str):
+    file_path = '/etc/prometheus/targets.json'
+    try:
+        data = []
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+        
+        data[0]['targets'].append(target)
+
+        with open(file_path, 'w') as f:
+            json.dump(data, f, indent=4)
+        return True
+    except Exception as e:
+        print(e)
+        return False
+
+async def remove_observer_prometheus_config(target: str):
+    file_path = '/etc/prometheus/targets.json'
+    try:
+        data = []
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+        
+        data[0]['targets'].remove(target)
+
+        with open(file_path, 'w') as f:
+            json.dump(data, f, indent=4)
+        return True
+    except Exception as e:
+        print(e)
+        return False
+    
 async def get_open_port():
     sock = socket.socket()
     sock.bind(('', 0))

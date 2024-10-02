@@ -1,5 +1,6 @@
 from database_service.mysql_service import MySQLService
 from sqlalchemy import Column, Integer, Boolean, String, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 
 Base = MySQLService.get_base()
@@ -25,6 +26,8 @@ class PortsSchema(Base):
     should_add_to_load_balancer = Column(Boolean, default=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, nullable=False, default=datetime.now(timezone.utc))
+
+    worker = relationship("WorkerSchema")
 
 class EnvironmentVariablesSchema(Base):
     __tablename__ = 'environment_variables'
