@@ -4,7 +4,7 @@ import json
 
 async def create_docker_container(image_name: str, container_name: str,  ports_map: list[str] = [], environment_variable_map: list[str] = []):
     try:
-        command = f'docker run -it -d --name={container_name}'
+        command = f'docker run -it -d --name={container_name} --memory="512m" --cpus="1" '
 
         for port in ports_map:
             command += f' -p {port} '
