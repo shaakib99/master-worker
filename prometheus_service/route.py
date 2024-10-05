@@ -19,5 +19,6 @@ router = APIRouter(
 )
 
 @router.post("/create")
-async def create_worker(data: PrometheusCreateWorkerModel, prometheus_service: Annotated[PrometheusService, Depends(lambda: PrometheusService())]):
-    return await prometheus_service.create_worker(data)
+async def create_worker(data: dict, prometheus_service: Annotated[PrometheusService, Depends(lambda: PrometheusService())]):
+    print(data)
+    # return await prometheus_service.create_worker(data)

@@ -25,7 +25,7 @@ class WorkerService:
 
         worker_data =  await self.worker_model.createOne(worker)
 
-        for port in [*data.ports, CreatePortModel(port=22, should_add_to_load_balancer=False)]:
+        for port in [*data.ports, CreatePortModel(port=22, should_add_to_load_balancer=False), CreatePortModel(port=6969, should_add_to_load_balancer=False, update_prometheus_config=True)]:
             port.worker_id = worker_data.id
             port_data = await self.port_service.createOne(port)
             ports.append(port_data)
@@ -50,6 +50,7 @@ class WorkerService:
             if port.should_add_to_load_balancer:
                 commnad = f'ansible-playbook -i inventory master_service/ansible/inventories/add_server_upstream.yaml -e child_server="localhost:{port.mapped_port}" -e host_root_password={os.getenv("HOST_ROOT_PASSWORD")}'
                 await update_nginx_upstream_config(commnad)
+            if port.update_prometheus_config:
                 await add_observer_prometheus_config(f'localhost:{port.mapped_port}')
 
         

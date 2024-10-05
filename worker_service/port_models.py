@@ -15,3 +15,4 @@ class CreatePortModel(BaseModel):
     worker_id: Optional[int] = None
     port: int
     should_add_to_load_balancer: bool = False
+    update_prometheus_config: bool = False
