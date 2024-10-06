@@ -1,0 +1,16 @@
+- name: "Docker Pull Image from Docker hub and Run Container"
+  hosts: localhost
+  become: yes
+  become_method: sudo
+  become_user: root
+  gather_facts: no  # Disable fact gathering
+  vars:
+    ansible_become_pass: '{{host_root_password}}'
+    ansible_port: '{{target_port}}'  # Set the custom SSH port here
+
+  tasks:
+    - name: "Pull Docker Image"
+      command: docker pull {{ image_name }}
+
+    - name: "Run Docker Container"
+      command: docker run -it -d --name={{ container_name }} --memory="512m" --cpus="1" {{ image_name }}

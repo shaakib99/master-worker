@@ -4,7 +4,7 @@ import json
 
 async def create_docker_container(image_name: str, container_name: str,  ports_map: list[str] = [], environment_variable_map: list[str] = []):
     try:
-        command = f'docker run -it -d --name={container_name} --memory="512m" --cpus="1" '
+        command = f'docker run -it -d --name={container_name} --memory="512m" --cpus="1" -v /var/run/docker.sock:/var/run/docker.sock'
 
         for port in ports_map:
             command += f' -p {port} '
@@ -13,7 +13,6 @@ async def create_docker_container(image_name: str, container_name: str,  ports_m
             command += f' -e {env_var} '
 
         command += image_name
-        print(f'running command: {command}')
         subprocess.run(command, shell=True)
         return True
     except Exception as e:
